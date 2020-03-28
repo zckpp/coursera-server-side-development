@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
+const authenticate = require('../authenticate');
 const Promotions = require('../model/promotions');
 
 const promoRouter = express.Router();
@@ -20,7 +20,7 @@ promoRouter.route('/')
     next(err);
   });
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
   Promotions.create(req.body)
   .then((promotion) => {
     console.log('promotion created ', promotion);
@@ -32,11 +32,11 @@ promoRouter.route('/')
     next(err);
   });
 })
-.put((req, res, next) => {
+.put(authenticate.verifyUser, (req, res, next) => {
   res.statusCode = 403;
   res.end('PUT operation not supported on /Promotions.');
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
   // remove() is deprecated
   Promotions.deleteMany({})
   .then((rsp) => {
@@ -62,12 +62,12 @@ promoRouter.route('/:promoId')
     next(err);
   });
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
   res.statusCode = 403;
   res.end(`POST operation not supported on /promotions/:${req.params.promoId}`);
 })
 // { new: true } will return the updated item
-.put((req, res, next) => {
+.put(authenticate.verifyUser, (req, res, next) => {
   Promotions.findByIdAndUpdate(req.params.promoId, {
     $set: req.body
   }, { new: true })
@@ -80,7 +80,7 @@ promoRouter.route('/:promoId')
     next(err);
   });
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
   promotions.findByIdAndRemove(req.params.promoId)
   .then((rsp) => {
     res.statusCode = 200;
