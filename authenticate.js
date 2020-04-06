@@ -30,7 +30,7 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts, (jwt_payload, done) => 
   });
 }));
 
-// verify if user has token
+// verify if user has token, will automatically add user object to req
 exports.verifyUser = passport.authenticate('jwt', {session: false});
 
 // verify if user is admin
